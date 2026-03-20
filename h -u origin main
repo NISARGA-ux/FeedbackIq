@@ -1,0 +1,15 @@
+[35mpackage-lock.json[m[36m:[m      "integrity": "sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvO[1;31mgroQ[mOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==",
+[35mserver.js[m[36m:[mconst [1;31mGROQ[m_API_KEY = process.env.[1;31mGROQ[m_API_KEY;
+[35mserver.js[m[36m:[mif (![1;31mGROQ[m_API_KEY) {
+[35mserver.js[m[36m:[m  console.warn('WARNING: [1;31mGROQ[m_API_KEY is not set in environment variables. Set process.env.[1;31mGROQ[m_API_KEY to use [1;31mGroq[m API.');
+[35mserver.js[m[36m:[m    const [1;31mgroq[mBody = {
+[35mserver.js[m[36m:[m    console.log('Calling [1;31mGroq[m...');
+[35mserver.js[m[36m:[m    const response = await fetch('https://api.[1;31mgroq[m.com/openai/v1/chat/completions', {
+[35mserver.js[m[36m:[m        'Authorization': `Bearer ${[1;31mGROQ[m_API_KEY}`
+[35mserver.js[m[36m:[m      body: JSON.stringify([1;31mgroq[mBody)
+[35mserver.js[m[36m:[m    console.log('[1;31mGroq[m status:', response.status);
+[35mserver.js[m[36m:[m      console.log('[1;31mGroq[m error:', JSON.stringify(data));
+[35mserver.js[m[36m:[m      return res.status(500).json({ error: data.error?.message || '[1;31mGroq[m API error' });
+[35mserver.js[m[36m:[m    // Convert [1;31mGroq[m response → Anthropic-style so HTML needs no changes
+[35mserver.js[m[36m:[m    console.log('[1;31mGroq[m reply preview:', text.slice(0, 100));
+[35mserver.js[m[36m:[m  console.log('   Powered by [1;31mGroq[m (free tier) — llama3-8b-8192');

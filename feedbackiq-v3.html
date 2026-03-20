@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FeedbackIQ v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0b0d0f;--surface:#111418;--surface2:#181c22;--border:#232830;--border2:#2e3540;
+  --accent:#e8ff47;--accent2:#47c8ff;--accent3:#ff6b47;--text:#eef1f5;--text2:#8a95a3;--text3:#505a66;
+  --green:#3dffa0;--purple:#c47aff;--pink:#ff6eb0;--r:12px;--rl:20px;
+}
+[data-theme=light]{
+  --bg:#f4f5f0;--surface:#fff;--surface2:#f0f1ec;--border:#e0e2d8;--border2:#cacdb8;
+  --text:#1a1c18;--text2:#4a4e40;--text3:#9a9e8e;--accent:#8aab00;--accent2:#0080b3;--accent3:#cc3300;
+  --green:#007a40;--purple:#6b3dcc;--pink:#cc2266;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 36px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);backdrop-filter:blur(14px);z-index:100;gap:12px;flex-wrap:wrap}
+.logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;display:flex;align-items:center;gap:9px;letter-spacing:-.5px}
+.logo-dot{width:26px;height:26px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;color:#000}
+.ver-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);background:rgba(232,255,71,.1);border:1px solid rgba(232,255,71,.25);padding:3px 9px;border-radius:20px}
+.header-right{display:flex;align-items:center;gap:10px}
+.theme-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .2s}
+.theme-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+
+.main-nav{display:flex;gap:0;padding:0 36px;border-bottom:1px solid var(--border);position:sticky;top:57px;background:var(--bg);z-index:90;overflow-x:auto}
+.nav-tab{padding:10px 18px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-tab:hover:not(.active){color:var(--text2)}
+
+.page{display:none;padding:32px 36px;position:relative;z-index:1;max-width:1360px;margin:0 auto}
+.page.active{display:block}
+
+.slabel{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.slabel::before{content:'//';color:var(--text3)}
+.sh{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:5px;letter-spacing:-.4px}
+.ssub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:24px}
+.card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.card-desc{font-size:11px;color:var(--text3);margin-bottom:16px;font-family:'DM Mono',monospace}
+
+.input-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
+.input-section::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(232,255,71,.05) 0%,transparent 70%);pointer-events:none}
+
+.channel-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:6px 13px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .2s}
+.tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+.tab:hover:not(.active){color:var(--text);background:var(--surface2)}
+
+.file-drop{border:1.5px dashed var(--border2);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px}
+.file-drop:hover,.file-drop.drag{border-color:var(--accent2);background:rgba(71,200,255,.04)}
+.file-drop input{display:none}
+.fd-icon{font-size:20px;margin-bottom:4px}
+.fd-text{font-size:12px;color:var(--text2)}
+.fd-hint{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:3px}
+
+textarea{width:100%;min-height:140px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.7;padding:14px 16px;resize:vertical;outline:none;transition:border-color .2s}
+textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,255,71,.06)}
+textarea::placeholder{color:var(--text3)}
+
+.samples{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.sample-btn{padding:4px 11px;background:transparent;border:1px dashed var(--border2);border-radius:6px;color:var(--text3);font-size:10px;cursor:pointer;font-family:'DM Mono',monospace;transition:all .2s}
+.sample-btn:hover{color:var(--accent2);border-color:var(--accent2)}
+
+.input-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:10px;flex-wrap:wrap}
+.char-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--accent);color:#000}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,255,71,.18)}
+.btn-primary:active{transform:none}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;filter:none}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--accent2);color:var(--accent2);background:rgba(71,200,255,.05)}
+.btn-sm{padding:7px 14px;font-size:12px}
+
+/* PROGRESS */
+.progress-wrap{display:none;margin-bottom:24px}
+.progress-wrap.active{display:block}
+.progress-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .5s ease}
+.progress-steps{display:flex;gap:0;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.progress-step{flex:1;text-align:center;padding:4px;transition:color .3s}
+.progress-step.done{color:var(--accent)}
+.progress-step.active{color:var(--accent2)}
+
+.loading-state{display:none;text-align:center;padding:40px 20px}
+.loading-state.active{display:block}
+.spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-msg{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)}
+.loading-sub{font-size:10px;color:var(--text3);margin-top:4px}
+
+/* RESULTS */
+#results{display:none}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.stat-card.c1::after{background:var(--accent)}.stat-card.c2::after{background:var(--accent2)}.stat-card.c3::after{background:var(--accent3)}.stat-card.c4::after{background:var(--green)}
+.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-family:'DM Mono',monospace;margin-bottom:7px}
+.stat-value{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;letter-spacing:-1px}
+.stat-card.c1 .stat-value{color:var(--accent)}.stat-card.c2 .stat-value{color:var(--accent2)}.stat-card.c3 .stat-value{color:var(--accent3)}.stat-card.c4 .stat-value{color:var(--green)}
+.stat-desc{font-size:11px;color:var(--text2);margin-top:2px}
+
+.insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.full-width{grid-column:1/-1}
+
+.sentiment-bar{height:28px;border-radius:8px;display:flex;overflow:hidden;margin:12px 0}
+.seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;font-family:'DM Mono',monospace;transition:width .8s ease}
+.seg.pos{background:var(--green);color:#000}.seg.neu{background:var(--accent2);color:#000}.seg.neg{background:var(--accent3);color:#fff}
+.sentiment-legend{display:flex;gap:14px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.legend-dot{width:6px;height:6px;border-radius:50%}
+
+.keyword-cloud{display:flex;flex-wrap:wrap;gap:6px}
+.keyword-tag{padding:4px 11px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;border:1px solid;transition:transform .2s;cursor:default}
+.keyword-tag:hover{transform:scale(1.06)}
+.kw-issue{background:rgba(255,107,71,.1);border-color:rgba(255,107,71,.3);color:var(--accent3)}
+.kw-praise{background:rgba(61,255,160,.1);border-color:rgba(61,255,160,.3);color:var(--green)}
+.kw-suggest{background:rgba(71,200,255,.1);border-color:rgba(71,200,255,.3);color:var(--accent2)}
+.kw-neutral{background:rgba(138,149,163,.1);border-color:rgba(138,149,163,.2);color:var(--text2)}
+
+.items-list{display:flex;flex-direction:column;gap:8px}
+.item{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px 13px;display:flex;align-items:flex-start;gap:9px;transition:border-color .2s}
+.item:hover{border-color:var(--border2)}
+.item-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.item-body{flex:1}
+.item-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.item-meta{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+.item-freq{margin-left:auto;flex-shrink:0;font-family:'DM Mono',monospace;font-size:10px;padding:2px 8px;border-radius:10px;background:var(--surface);color:var(--text2);border:1px solid var(--border);white-space:nowrap;align-self:flex-start}
+
+/* SEVERITY BADGE */
+.sev{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-family:'DM Mono',monospace;font-weight:500;margin-right:6px}
+.sev-critical{background:rgba(255,50,50,.15);color:#ff4040;border:1px solid rgba(255,50,50,.25)}
+.sev-high{background:rgba(255,107,71,.15);color:var(--accent3);border:1px solid rgba(255,107,71,.25)}
+.sev-medium{background:rgba(232,255,71,.1);color:var(--accent);border:1px solid rgba(232,255,71,.2)}
+.sev-low{background:rgba(138,149,163,.1);color:var(--text2);border:1px solid rgba(138,149,163,.2)}
+
+.priority-list{display:flex;flex-direction:column;gap:9px}
+.priority-item{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--surface2);border-radius:9px;border:1px solid var(--border)}
+.priority-rank{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text3);width:26px;flex-shrink:0}
+.priority-rank.r1{color:var(--accent)}.priority-rank.r2{color:var(--accent2)}.priority-rank.r3{color:var(--green)}
+.priority-bar-wrap{flex:1}
+.priority-label{font-size:13px;font-weight:500;margin-bottom:4px}
+.priority-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.priority-fill{height:100%;border-radius:2px;transition:width 1s ease}
+.priority-score{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);flex-shrink:0}
+
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:26px;margin-bottom:16px}
+.summary-text{font-size:14px;line-height:1.85;color:var(--text2);font-style:italic}
+.summary-text strong{color:var(--text);font-style:normal}
+
+.action-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+
+/* RESPONSE TEMPLATES */
+.template-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px}
+.template-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.template-label{font-size:11px;font-family:'DM Mono',monospace;color:var(--accent2)}
+.template-issue{font-size:13px;font-weight:500;margin-bottom:8px}
+.template-text{font-size:12px;color:var(--text2);line-height:1.7;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;white-space:pre-wrap}
+.copy-btn{background:transparent;border:1px solid var(--border2);color:var(--text3);padding:4px 10px;border-radius:6px;font-size:10px;cursor:pointer;font-family:'DM Mono',monospace;transition:all .2s}
+.copy-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* HISTORY */
+.history-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.history-item:hover{border-color:var(--accent2);background:var(--surface2)}
+.history-meta{flex:1}
+.history-title{font-size:13px;font-weight:500;margin-bottom:3px}
+.history-sub{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
+.history-score{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.history-del-btn{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:0 4px;transition:color .2s}
+.history-del-btn:hover{color:var(--accent3)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:12px;font-family:'DM Mono',monospace}
+
+/* TREND */
+.batch-input{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:13px 15px;margin-bottom:9px}
+.batch-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.batch-name-input{background:transparent;border:none;outline:none;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;width:200px}
+.batch-remove{background:none;border:none;color:var(--accent3);cursor:pointer;font-size:16px;line-height:1}
+.add-batch{width:100%;padding:9px;background:transparent;border:1.5px dashed var(--border2);border-radius:var(--r);color:var(--text3);font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;transition:all .2s;margin-bottom:12px}
+.add-batch:hover{border-color:var(--accent2);color:var(--accent2)}
+
+/* NETWORK */
+#netContainer canvas{width:100%;border-radius:var(--r);border:1px solid var(--border)}
+.net-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.net-legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2);font-family:'DM Mono',monospace}
+.net-dot{width:7px;height:7px;border-radius:50%}
+
+/* CHAT */
+.ask-section{max-width:780px}
+.chat-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:16px}
+.chat-history{min-height:180px;max-height:400px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.chat-msg{display:flex;gap:10px}
+.chat-msg.user{flex-direction:row-reverse}
+.msg-bubble{max-width:78%;padding:11px 14px;border-radius:12px;font-size:13px;line-height:1.7}
+.chat-msg.ai .msg-bubble{background:var(--surface2);border:1px solid var(--border);color:var(--text2)}
+.chat-msg.user .msg-bubble{background:rgba(232,255,71,.08);border:1px solid rgba(232,255,71,.18);color:var(--text)}
+.msg-avatar{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border)}
+.chat-input-row{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--border);background:var(--surface2)}
+.chat-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px}
+.chat-input::placeholder{color:var(--text3)}
+.chat-send{padding:7px 16px;background:var(--accent);color:#000;border:none;border-radius:7px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.chat-send:hover{filter:brightness(1.08)}
+.chat-send:disabled{opacity:.4;cursor:not-allowed}
+.preset-questions{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.preset-q{padding:6px 13px;background:var(--surface);border:1px solid var(--border2);border-radius:20px;font-size:11px;color:var(--text2);cursor:pointer;font-family:'DM Mono',monospace;transition:all .2s}
+.preset-q:hover{border-color:var(--accent2);color:var(--accent2)}
+
+/* TAGGING */
+.tag-input-row{display:flex;gap:8px;margin-bottom:12px}
+.tag-input{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;color:var(--text);font-size:12px;outline:none;font-family:'DM Mono',monospace}
+.tag-input:focus{border-color:var(--accent)}
+.tags-display{display:flex;flex-wrap:wrap;gap:6px;min-height:28px}
+.user-tag{padding:4px 10px;border-radius:20px;background:rgba(196,122,255,.1);border:1px solid rgba(196,122,255,.25);color:var(--purple);font-size:11px;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px}
+.user-tag button{background:none;border:none;color:var(--purple);cursor:pointer;font-size:13px;line-height:1;padding:0}
+
+.error-msg{display:none;background:rgba(255,107,71,.08);border:1px solid rgba(255,107,71,.25);border-radius:var(--r);padding:12px 16px;color:var(--accent3);font-size:13px;margin-bottom:16px}
+.error-msg.active{display:block}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+@media(max-width:860px){
+  .page{padding:20px 16px}
+  header,.main-nav{padding-left:16px;padding-right:16px}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .insights-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="logo"><div class="logo-dot">⚡</div>FeedbackIQ <span class="ver-badge">v3.0</span></div>
+  </div>
+  <div class="header-right">
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);border:1px solid var(--border2);padding:4px 10px;border-radius:20px">Insight Engine</span>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <button class="nav-tab active" onclick="goPage('analyze',this)">⚡ Analyze</button>
+  <button class="nav-tab" onclick="goPage('trends',this)">📈 Trends</button>
+  <button class="nav-tab" onclick="goPage('network',this)">🕸 Network</button>
+  <button class="nav-tab" onclick="goPage('templates',this)">✉ Templates</button>
+  <button class="nav-tab" onclick="goPage('history',this)">🕑 History</button>
+  <button class="nav-tab" onclick="goPage('ask',this)">💬 Ask AI</button>
+</nav>
+
+<!-- ============ ANALYZE ============ -->
+<div class="page active" id="page-analyze">
+  <div class="input-section">
+    <div class="slabel">Input</div>
+    <div class="sh">Paste or Upload Feedback</div>
+    <div class="ssub">Supports plain text, CSV, and .txt. Mix reviews, tickets, and emails freely.</div>
+
+    <div class="channel-tabs">
+      <button class="tab active" onclick="setChannel(this,'reviews')">⭐ Reviews</button>
+      <button class="tab" onclick="setChannel(this,'emails')">📧 Emails</button>
+      <button class="tab" onclick="setChannel(this,'support')">🎫 Support</button>
+      <button class="tab" onclick="setChannel(this,'social')">📣 Social</button>
+      <button class="tab" onclick="setChannel(this,'mixed')">🔀 Mixed</button>
+    </div>
+
+    <div class="file-drop" id="fileDrop" onclick="document.getElementById('fileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <input type="file" id="fileInput" accept=".txt,.csv,.md" onchange="handleFile(event)"/>
+      <div class="fd-icon">📎</div>
+      <div class="fd-text">Drop a file here, or click to browse</div>
+      <div class="fd-hint">.txt · .csv · .md supported</div>
+    </div>
+
+    <div class="tag-input-row">
+      <input class="tag-input" id="tagInput" placeholder="Add tags (e.g. enterprise, mobile, v2.1) and press Enter" onkeydown="handleTagKey(event)"/>
+      <button class="btn btn-ghost btn-sm" onclick="addTagFromInput()">+ Tag</button>
+    </div>
+    <div class="tags-display" id="tagsDisplay"></div>
+    <div style="margin-top:12px"></div>
+
+    <textarea id="feedbackInput" placeholder="Or paste feedback directly here..." oninput="updateCount()"></textarea>
+    <div class="samples">
+      <span style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace">Load sample:</span>
+      <button class="sample-btn" onclick="loadSample('saas')">SaaS App</button>
+      <button class="sample-btn" onclick="loadSample('ecommerce')">E-commerce</button>
+      <button class="sample-btn" onclick="loadSample('mobile')">Mobile App</button>
+    </div>
+    <div class="input-footer">
+      <span class="char-count" id="charCount">0 characters</span>
+      <button class="btn btn-primary" id="analyzeBtn" onclick="analyzeFeedback()">⚡ Analyze Feedback</button>
+    </div>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-steps">
+      <div class="progress-step" id="ps0">Sentiment</div>
+      <div class="progress-step" id="ps1">Issues</div>
+      <div class="progress-step" id="ps2">Keywords</div>
+      <div class="progress-step" id="ps3">Priorities</div>
+      <div class="progress-step" id="ps4">Done</div>
+    </div>
+  </div>
+  <div class="loading-state" id="loadingState">
+    <div class="spinner"></div>
+    <div class="loading-msg" id="loadingMsg">Starting analysis...</div>
+    <div class="loading-sub">Breaking into focused calls to avoid truncation</div>
+  </div>
+
+  <div id="results">
+    <div class="action-row">
+      <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportJSON()">⬇ JSON</button>
+      <button class="btn btn-ghost btn-sm" onclick="copyReport()">📋 Copy Report</button>
+      <button class="btn btn-ghost btn-sm" onclick="saveToHistory()">💾 Save</button>
+    </div>
+    <div class="stats-row" id="statsRow"></div>
+    <div class="summary-card">
+      <div class="slabel">Executive Summary</div>
+      <div class="summary-text" id="summaryText"></div>
+    </div>
+    <div class="insights-grid">
+      <div class="card">
+        <div class="card-title">💬 Sentiment</div>
+        <div class="card-desc">Overall tone breakdown</div>
+        <div class="sentiment-bar" id="sentimentBar">
+          <div class="seg pos" id="segPos" style="width:0%"></div>
+          <div class="seg neu" id="segNeu" style="width:0%"></div>
+          <div class="seg neg" id="segNeg" style="width:0%"></div>
+        </div>
+        <div class="sentiment-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div><span id="posLabel">Positive</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div><span id="neuLabel">Neutral</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div><span id="negLabel">Negative</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🏷️ Keywords</div>
+        <div class="card-desc">Top themes by type</div>
+        <div class="keyword-cloud" id="keywordCloud"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">⚠️ Issues <span id="issueCount" style="font-size:11px;font-weight:400;color:var(--text3);font-family:'DM Mono',monospace"></span></div>
+        <div class="card-desc">Problems ranked by severity</div>
+        <div class="items-list" id="issuesList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💡 Suggestions</div>
+        <div class="card-desc">Feature requests & ideas</div>
+        <div class="items-list" id="suggestionsList"></div>
+      </div>
+      <div class="card full-width">
+        <div class="card-title">🎯 Action Priorities</div>
+        <div class="card-desc">Ranked by combined impact × frequency</div>
+        <div class="priority-list" id="priorityList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TRENDS ============ -->
+<div class="page" id="page-trends">
+  <div class="slabel">Trend Comparison</div>
+  <div class="sh">Compare Across Time Periods</div>
+  <div class="ssub">Add feedback from different time windows. See how sentiment, issues, and score shift.</div>
+  <div id="batchList"></div>
+  <button class="add-batch" onclick="addBatch()">+ Add Another Period</button>
+  <button class="btn btn-primary" id="trendBtn" onclick="runTrendAnalysis()">📈 Compare Trends</button>
+  <div class="progress-wrap" id="trendProgress" style="margin-top:14px"></div>
+  <div class="loading-state" id="trendLoading"><div class="spinner"></div><div class="loading-msg">Analyzing each period...</div></div>
+  <div id="trendResults" style="display:none;margin-top:24px"></div>
+</div>
+
+<!-- ============ NETWORK ============ -->
+<div class="page" id="page-network">
+  <div class="slabel">Keyword Network</div>
+  <div class="sh">Topic Co-occurrence Graph</div>
+  <div class="ssub">Node size = frequency. Lines = topics that appear together. Drag nodes to explore.</div>
+  <div id="netContainer"><div class="empty-state">Run an analysis first, then come back here.</div></div>
+</div>
+
+<!-- ============ TEMPLATES ============ -->
+<div class="page" id="page-templates">
+  <div class="slabel">Response Templates</div>
+  <div class="sh">AI-Generated Reply Templates</div>
+  <div class="ssub">One-click professional responses for each identified issue. Ready to copy and send.</div>
+  <div id="templatesContainer"><div class="empty-state">Run an analysis to generate response templates for your top issues.</div></div>
+</div>
+
+<!-- ============ HISTORY ============ -->
+<div class="page" id="page-history">
+  <div class="slabel">Analysis History</div>
+  <div class="sh">Saved Reports</div>
+  <div class="ssub">Click any saved analysis to reload its results.</div>
+  <div id="historyList"><div class="empty-state">No saved analyses yet. Run an analysis and click Save.</div></div>
+</div>
+
+<!-- ============ ASK ============ -->
+<div class="page" id="page-ask">
+  <div class="ask-section">
+    <div class="slabel">Ask AI</div>
+    <div class="sh">Chat With Your Feedback</div>
+    <div class="ssub">Ask anything about your analyzed data. Works after running an analysis.</div>
+    <div class="preset-questions">
+      <button class="preset-q" onclick="sendPreset(this)">Which issue should I fix first?</button>
+      <button class="preset-q" onclick="sendPreset(this)">What are users praising most?</button>
+      <button class="preset-q" onclick="sendPreset(this)">Summarize top 3 feature requests</button>
+      <button class="preset-q" onclick="sendPreset(this)">What's driving negative sentiment?</button>
+      <button class="preset-q" onclick="sendPreset(this)">Write a product update addressing main complaints</button>
+    </div>
+    <div class="chat-wrap">
+      <div class="chat-history" id="chatHistory">
+        <div class="chat-msg ai">
+          <div class="msg-avatar">⚡</div>
+          <div class="msg-bubble">Hi! Run an analysis on the Analyze tab, then ask me anything about your feedback data — patterns, priorities, root causes, or how to respond.</div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatInput" placeholder="Ask about your feedback..." onkeydown="if(event.key==='Enter')sendChat()"/>
+        <button class="chat-send" id="chatSend" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==============================
+// STATE
+// ==============================
+let lastAnalysis = null;
+let currentChannel = 'reviews';
+let chatMessages = [];
+let userTags = [];
+let batchCount = 0;
+let isDark = true;
+
+const SAMPLES = {
+  saas: `1. The dashboard takes forever to load with many open projects. Search returns wrong results half the time.
+
+2. Love the new collaboration features! Commenting on tasks improved our team workflow significantly. Would love real-time cursors like Figma.
+
+3. Billing is confusing — charged twice last month, invoice shows no breakdown. Support took 5 days and the issue still isn't resolved.
+
+4. Mobile app crashes every single time I try to upload files over 10MB. This is critical for our design team.
+
+5. Onboarding is way too complex. New team members always struggle with the permissions system. A guided setup wizard would help enormously.
+
+6. The new PDF export is great! Please also add CSV export for the analytics dashboard.
+
+7. API documentation is outdated — several listed endpoints no longer work as described. Need webhook support for Zapier integration urgently.
+
+8. Performance improved significantly after the last update. The new UI is clean and intuitive. Keep it up!`,
+
+  ecommerce: `Review 1 (1 star): Ordered a jacket, got a completely wrong item. Return process is a nightmare — 3 weeks and still no refund. Never shopping here again.
+
+Review 2 (5 stars): Amazing product quality! Fabric exactly as described and shipping was faster than expected. Packaging is beautiful too.
+
+Review 3 (2 stars): Size chart is wildly inaccurate. Ordered medium, fits like XS. You should offer free returns at minimum. Customer service was dismissive.
+
+Review 4 (4 stars): Great products overall. Wish there was a loyalty rewards program. Also need a wishlist feature on the mobile site.
+
+Review 5 (3 stars): Product is decent but the website is very slow and checkout crashes on Safari. Lost my cart twice already.
+
+Review 6 (5 stars): Incredible quality, real leather, amazing stitching. Fast international shipping too. Would love more color options.
+
+Review 7 (1 star): Tracking number has never worked. No shipping updates in 2 weeks. Support only sends copy-paste responses.`,
+
+  mobile: `★★★★★ Best productivity app I have ever used. The AI suggestions save me hours weekly. Please add iOS home screen widget support!
+
+★★☆☆☆ Battery drain is ridiculous. The app kills my battery by noon. Was 5 stars before this started happening.
+
+★★★★☆ Device sync is seamless and reliable. But dark mode is inconsistent — some screens stay bright white even with dark mode on.
+
+★☆☆☆☆ Crashes on iPhone 14 Pro whenever I open calendar integration. Reinstalled 3 times. Still broken. Unusable.
+
+★★★★★ The recent update dramatically improved speed. Notifications work correctly now. Please add bulk task actions like select all and mark done.
+
+★★★☆☆ UI is cluttered on smaller phones. Text is too small. Accessibility settings do not work properly with screen readers at all.
+
+★★★★☆ Would be 5 stars with a proper iPad layout. Currently it just stretches the phone UI which looks awful. Also desperately need offline mode.`
+};
+
+// ==============================
+// THEME
+// ==============================
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'light');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙 Dark' : '☀ Light';
+}
+
+// ==============================
+// NAV
+// ==============================
+function goPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'network' && lastAnalysis) renderNetwork();
+  if (id === 'templates' && lastAnalysis && !lastAnalysis._templatesLoaded) generateTemplates();
+  if (id === 'history') renderHistory();
+}
+
+// ==============================
+// INPUT
+// ==============================
+function setChannel(el, ch) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentChannel = ch;
+}
+function loadSample(t) { document.getElementById('feedbackInput').value = SAMPLES[t]; updateCount(); }
+function updateCount() {
+  const l = document.getElementById('feedbackInput').value.length;
+  document.getElementById('charCount').textContent = l.toLocaleString() + ' characters';
+}
+function showError(m) { const e = document.getElementById('errorMsg'); e.textContent = '⚠ ' + m; e.classList.add('active'); }
+function hideError() { document.getElementById('errorMsg').classList.remove('active'); }
+
+// Tags
+function handleTagKey(e) { if (e.key === 'Enter') addTagFromInput(); }
+function addTagFromInput() {
+  const inp = document.getElementById('tagInput');
+  const val = inp.value.trim();
+  if (!val || userTags.includes(val)) { inp.value = ''; return; }
+  userTags.push(val); inp.value = '';
+  renderTags();
+}
+function removeTag(t) { userTags = userTags.filter(x => x !== t); renderTags(); }
+function renderTags() {
+  document.getElementById('tagsDisplay').innerHTML = userTags.map(t =>
+    `<span class="user-tag">${t}<button onclick="removeTag('${t}')">×</button></span>`
+  ).join('');
+}
+
+// File upload
+function handleDragOver(e) { e.preventDefault(); document.getElementById('fileDrop').classList.add('drag'); }
+function handleDragLeave() { document.getElementById('fileDrop').classList.remove('drag'); }
+function handleDrop(e) { e.preventDefault(); document.getElementById('fileDrop').classList.remove('drag'); const f = e.dataTransfer.files[0]; if (f) processFile(f); }
+function handleFile(e) { const f = e.target.files[0]; if (f) processFile(f); }
+function processFile(file) {
+  const r = new FileReader();
+  r.onload = ev => {
+    let text = ev.target.result;
+    if (file.name.endsWith('.csv')) {
+      text = text.split('\n').slice(1).filter(l => l.trim()).map((l, i) => `${i + 1}. ${l.replace(/^"|"$/g, '').replace(/","/g, ' | ')}`).join('\n\n');
+    }
+    document.getElementById('feedbackInput').value = text;
+    updateCount();
+  };
+  r.readAsText(file);
+}
+
+// ==============================
+// PROGRESS
+// ==============================
+function setProgress(step) {
+  const pct = [0, 25, 50, 75, 100];
+  document.getElementById('progressFill').style.width = pct[step] + '%';
+  for (let i = 0; i < 5; i++) {
+    const el = document.getElementById('ps' + i);
+    el.className = 'progress-step' + (i < step ? ' done' : i === step ? ' active' : '');
+  }
+}
+
+// ==============================
+// SAFE JSON PARSE — robust against truncation
+// ==============================
+function safeParseJSON(raw) {
+  const cleaned = raw.replace(/```json|```/g, '').trim();
+  try { return JSON.parse(cleaned); } catch (_) {}
+  // Attempt to auto-close truncated JSON
+  let s = cleaned;
+  // close any open strings
+  const quoteCount = (s.match(/(?<!\\)"/g) || []).length;
+  if (quoteCount % 2 !== 0) s += '"';
+  // close open arrays/objects greedily
+  const stack = [];
+  for (const c of s) {
+    if (c === '{') stack.push('}');
+    else if (c === '[') stack.push(']');
+    else if (c === '}' || c === ']') stack.pop();
+  }
+  s += stack.reverse().join('');
+  try { return JSON.parse(s); } catch (_) {}
+  return null;
+}
+
+// ==============================
+// ANALYZE — split into 2 focused API calls
+// ==============================
+async function callClaude(prompt, maxTokens = 800) {
+  const res = await fetch("/api/claude", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: maxTokens,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `API error ${res.status}`); }
+  const data = await res.json();
+  return data.content.map(b => b.text || '').join('');
+}
+
+async function analyzeFeedback() {
+  const text = document.getElementById('feedbackInput').value.trim();
+  if (!text) { showError('Please enter or upload some feedback.'); return; }
+  if (text.length < 40) { showError('Please provide more feedback for a meaningful analysis.'); return; }
+  hideError();
+
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('progressWrap').classList.add('active');
+  document.getElementById('loadingState').classList.add('active');
+  document.getElementById('loadingMsg').textContent = 'Step 1 of 2 — Sentiment & keywords...';
+  setProgress(0);
+
+  const truncatedText = text.slice(0, 3500); // cap input to prevent large prompt
+
+  try {
+    // ---- CALL 1: sentiment, keywords, summary, stats ----
+    setProgress(1);
+    const prompt1 = `Analyze this customer feedback and return ONLY valid JSON (no markdown, no explanation):
+{"summary":"2-3 sentence summary with specific numbers","stats":{"totalEntries":0,"issuesFound":0,"suggestionsFound":0,"avgSentimentScore":0},"sentiment":{"positive":0,"neutral":0,"negative":0},"keywords":[{"text":"k","type":"issue","count":1}]}
+
+Rules: keywords = 8-10 items, type is one of: issue|praise|suggest|neutral. sentiment must sum to 100. avgSentimentScore is 0-10. Return ONLY the JSON object.
+
+Feedback (channel: ${currentChannel}):
+${truncatedText}`;
+
+    document.getElementById('loadingMsg').textContent = 'Step 1 of 2 — Sentiment & keywords...';
+    const raw1 = await callClaude(prompt1, 700);
+    const part1 = safeParseJSON(raw1);
+    if (!part1) throw new Error('Could not parse sentiment response. Please try again.');
+    setProgress(2);
+
+    // ---- CALL 2: issues, suggestions, priorities, network ----
+    setProgress(3);
+    document.getElementById('loadingMsg').textContent = 'Step 2 of 2 — Issues & priorities...';
+    const prompt2 = `Analyze this customer feedback and return ONLY valid JSON (no markdown, no explanation):
+{"issues":[{"title":"t","description":"d","severity":"Critical|High|Medium|Low","frequency":"High|Medium|Low","count":1}],"suggestions":[{"title":"t","description":"d","votes":5}],"priorities":[{"label":"l","score":80,"rationale":"r"}],"networkEdges":[{"source":"a","target":"b","weight":2}]}
+
+Rules: issues = 3-5 items max, suggestions = 3-4 items max, priorities = exactly 5 items sorted by score desc, networkEdges = 6-10 pairs. Keep all text values SHORT (under 60 chars). Return ONLY the JSON object.
+
+Feedback (channel: ${currentChannel}):
+${truncatedText}`;
+
+    const raw2 = await callClaude(prompt2, 800);
+    const part2 = safeParseJSON(raw2);
+    if (!part2) throw new Error('Could not parse issues response. Please try again.');
+    setProgress(4);
+
+    // Merge results
+    lastAnalysis = { ...part1, ...part2, _rawFeedback: text, _channel: currentChannel, _tags: [...userTags], _date: new Date().toISOString(), _templatesLoaded: false };
+    renderResults(lastAnalysis);
+
+  } catch (e) {
+    showError('Analysis failed: ' + e.message);
+  } finally {
+    document.getElementById('analyzeBtn').disabled = false;
+    document.getElementById('progressWrap').classList.remove('active');
+    document.getElementById('loadingState').classList.remove('active');
+    setProgress(0);
+  }
+}
+
+// ==============================
+// RENDER
+// ==============================
+function renderResults(d) {
+  const statsData = [
+    { l: 'Entries', v: d.stats?.totalEntries || '—', d: 'In this batch', c: 'c1' },
+    { l: 'Issues', v: d.stats?.issuesFound || (d.issues?.length || '—'), d: 'Unique problems', c: 'c2' },
+    { l: 'Suggestions', v: d.stats?.suggestionsFound || (d.suggestions?.length || '—'), d: 'Ideas captured', c: 'c3' },
+    { l: 'Score', v: (d.stats?.avgSentimentScore || 0) + '/10', d: 'Satisfaction', c: 'c4' }
+  ];
+  document.getElementById('statsRow').innerHTML = statsData.map(s => `<div class="stat-card ${s.c}"><div class="stat-label">${s.l}</div><div class="stat-value">${s.v}</div><div class="stat-desc">${s.d}</div></div>`).join('');
+
+  document.getElementById('summaryText').innerHTML = '"' + (d.summary || '').replace(/(\d+%?|\bcritical\b|\burgent\b)/gi, '<strong>$1</strong>') + '"';
+
+  const s = d.sentiment || { positive: 33, neutral: 34, negative: 33 };
+  setTimeout(() => {
+    [['segPos', s.positive], ['segNeu', s.neutral], ['segNeg', s.negative]].forEach(([id, v]) => {
+      const el = document.getElementById(id);
+      el.style.width = v + '%';
+      el.textContent = v > 9 ? v + '%' : '';
+    });
+  }, 80);
+  document.getElementById('posLabel').textContent = `Positive ${s.positive}%`;
+  document.getElementById('neuLabel').textContent = `Neutral ${s.neutral}%`;
+  document.getElementById('negLabel').textContent = `Negative ${s.negative}%`;
+
+  const kwC = { issue: 'kw-issue', praise: 'kw-praise', suggest: 'kw-suggest', neutral: 'kw-neutral' };
+  const kwI = { issue: '⚠', praise: '✓', suggest: '→', neutral: '·' };
+  document.getElementById('keywordCloud').innerHTML = (d.keywords || []).map(k =>
+    `<span class="keyword-tag ${kwC[k.type] || 'kw-neutral'}" title="${k.count} mentions">${kwI[k.type] || '·'} ${k.text} <small style="opacity:.5">${k.count}</small></span>`
+  ).join('');
+
+  const sevClass = { Critical: 'sev-critical', High: 'sev-high', Medium: 'sev-medium', Low: 'sev-low' };
+  const fc = { High: 'var(--accent3)', Medium: 'var(--accent)', Low: 'var(--text2)' };
+  const issues = d.issues || [];
+  document.getElementById('issueCount').textContent = issues.length ? `(${issues.length})` : '';
+  document.getElementById('issuesList').innerHTML = issues.map(i =>
+    `<div class="item"><div class="item-icon">🔴</div><div class="item-body"><div class="item-title"><span class="sev ${sevClass[i.severity] || 'sev-medium'}">${i.severity || 'Medium'}</span>${i.title}</div><div class="item-meta">${i.description}</div></div><div class="item-freq" style="color:${fc[i.frequency] || 'var(--text2)'}">×${i.count}</div></div>`
+  ).join('') || '<div class="item-meta" style="padding:8px">No issues found.</div>';
+
+  document.getElementById('suggestionsList').innerHTML = (d.suggestions || []).map(s =>
+    `<div class="item"><div class="item-icon">💡</div><div class="item-body"><div class="item-title">${s.title}</div><div class="item-meta">${s.description}</div></div><div class="item-freq">Impact ${s.votes}/10</div></div>`
+  ).join('') || '<div class="item-meta" style="padding:8px">No suggestions found.</div>';
+
+  const rC = ['var(--accent)', 'var(--accent2)', 'var(--green)', 'var(--purple)', 'var(--pink)'];
+  document.getElementById('priorityList').innerHTML = (d.priorities || []).map((p, i) =>
+    `<div class="priority-item"><div class="priority-rank ${i < 3 ? 'r' + (i + 1) : ''}">${String(i + 1).padStart(2, '0')}</div><div class="priority-bar-wrap"><div class="priority-label">${p.label}</div><div class="priority-bar"><div class="priority-fill" id="pf${i}" style="width:0%;background:${rC[i]}"></div></div><div class="item-meta" style="margin-top:3px">${p.rationale}</div></div><div class="priority-score">${p.score}%</div></div>`
+  ).join('');
+  setTimeout(() => (d.priorities || []).forEach((p, i) => { const e = document.getElementById('pf' + i); if (e) e.style.width = p.score + '%'; }), 200);
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ==============================
+// RESPONSE TEMPLATES
+// ==============================
+async function generateTemplates() {
+  if (!lastAnalysis) return;
+  const container = document.getElementById('templatesContainer');
+  container.innerHTML = '<div class="loading-state active" style="padding:30px 0"><div class="spinner"></div><div class="loading-msg">Generating response templates...</div></div>';
+
+  const issues = (lastAnalysis.issues || []).slice(0, 4);
+  if (!issues.length) { container.innerHTML = '<div class="empty-state">No issues found to generate templates for.</div>'; return; }
+
+  try {
+    const issueList = issues.map((iss, i) => `${i + 1}. ${iss.title}: ${iss.description}`).join('\n');
+    const prompt = `For each of these customer-reported issues, write a short, professional, empathetic response template a support team could send. Return ONLY valid JSON array:
+[{"issue":"issue title","template":"Dear [Customer],\\n\\nThank you for...\\n\\nBest regards,\\n[Team]"}]
+
+Keep each template 3-5 sentences. Be specific about the issue. Sound human, not robotic.
+
+Issues:
+${issueList}`;
+
+    const raw = await callClaude(prompt, 900);
+    const templates = safeParseJSON(raw);
+    if (!templates || !Array.isArray(templates)) throw new Error('Could not parse templates.');
+
+    lastAnalysis._templatesLoaded = true;
+    container.innerHTML = templates.map((t, i) => `
+      <div class="template-card">
+        <div class="template-header">
+          <span class="template-label">Template ${i + 1}</span>
+          <button class="copy-btn" onclick="copyTemplate(this, ${i})">Copy</button>
+        </div>
+        <div class="template-issue">${t.issue || issues[i]?.title || ''}</div>
+        <div class="template-text" id="tmpl${i}">${(t.template || '').replace(/\\n/g, '\n')}</div>
+      </div>`).join('');
+  } catch (e) {
+    container.innerHTML = `<div class="error-msg active">Template generation failed: ${e.message}</div>`;
+  }
+}
+function copyTemplate(btn, i) {
+  const text = document.getElementById('tmpl' + i).textContent;
+  navigator.clipboard.writeText(text).then(() => { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000); });
+}
+
+// ==============================
+// HISTORY
+// ==============================
+function saveToHistory() {
+  if (!lastAnalysis) return;
+  const history = JSON.parse(localStorage.getItem('fiq_history') || '[]');
+  const entry = {
+    id: Date.now(),
+    date: new Date().toLocaleString(),
+    channel: lastAnalysis._channel,
+    tags: lastAnalysis._tags || [],
+    score: lastAnalysis.stats?.avgSentimentScore || 0,
+    summary: (lastAnalysis.summary || '').slice(0, 120) + '...',
+    data: lastAnalysis
+  };
+  history.unshift(entry);
+  if (history.length > 20) history.pop();
+  localStorage.setItem('fiq_history', JSON.stringify(history));
+  alert('Analysis saved to history!');
+}
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('fiq_history') || '[]');
+  const container = document.getElementById('historyList');
+  if (!history.length) { container.innerHTML = '<div class="empty-state">No saved analyses yet. Run an analysis and click Save.</div>'; return; }
+  const scoreCol = s => s >= 7 ? 'var(--green)' : s >= 5 ? 'var(--accent)' : 'var(--accent3)';
+  container.innerHTML = history.map(h => `
+    <div class="history-item" onclick="loadFromHistory(${h.id})">
+      <div style="font-size:20px">📄</div>
+      <div class="history-meta">
+        <div class="history-title">${h.channel} · ${h.tags?.length ? h.tags.join(', ') : 'No tags'}</div>
+        <div class="history-sub">${h.date} · ${h.summary}</div>
+      </div>
+      <div class="history-score" style="color:${scoreCol(h.score)}">${h.score}/10</div>
+      <button class="history-del-btn" onclick="deleteHistory(event,${h.id})">×</button>
+    </div>`).join('');
+}
+function loadFromHistory(id) {
+  const history = JSON.parse(localStorage.getItem('fiq_history') || '[]');
+  const entry = history.find(h => h.id === id);
+  if (!entry) return;
+  lastAnalysis = entry.data;
+  renderResults(lastAnalysis);
+  goPage('analyze', document.querySelector('.nav-tab'));
+  document.querySelector('.nav-tab').classList.add('active');
+}
+function deleteHistory(e, id) {
+  e.stopPropagation();
+  const history = JSON.parse(localStorage.getItem('fiq_history') || '[]').filter(h => h.id !== id);
+  localStorage.setItem('fiq_history', JSON.stringify(history));
+  renderHistory();
+}
+
+// ==============================
+// EXPORT
+// ==============================
+function exportCSV() {
+  if (!lastAnalysis) { alert('Run an analysis first.'); return; }
+  let csv = 'Type,Title,Detail,Severity,Frequency/Impact\n';
+  (lastAnalysis.issues || []).forEach(i => csv += `Issue,"${i.title}","${i.description}",${i.severity},${i.frequency}\n`);
+  (lastAnalysis.suggestions || []).forEach(s => csv += `Suggestion,"${s.title}","${s.description}",,${s.votes}/10\n`);
+  (lastAnalysis.priorities || []).forEach(p => csv += `Priority,"${p.label}","${p.rationale}",,${p.score}%\n`);
+  dl('feedbackiq.csv', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv));
+}
+function exportJSON() {
+  if (!lastAnalysis) { alert('Run an analysis first.'); return; }
+  dl('feedbackiq.json', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(lastAnalysis, null, 2)));
+}
+function copyReport() {
+  if (!lastAnalysis) { alert('Run an analysis first.'); return; }
+  const d = lastAnalysis;
+  let r = `FEEDBACKIQ REPORT\n${'─'.repeat(40)}\n${d.summary}\n\nSENTIMENT: ${d.sentiment?.positive}% pos · ${d.sentiment?.neutral}% neu · ${d.sentiment?.negative}% neg\n\nISSUES:\n`;
+  (d.issues || []).forEach((i, n) => r += `${n + 1}. [${i.severity}] ${i.title} (×${i.count})\n`);
+  r += '\nSUGGESTIONS:\n';
+  (d.suggestions || []).forEach((s, n) => r += `${n + 1}. ${s.title}\n`);
+  r += '\nACTION PRIORITIES:\n';
+  (d.priorities || []).forEach((p, n) => r += `${n + 1}. ${p.label} (${p.score}%)\n`);
+  if (d._tags?.length) r += `\nTAGS: ${d._tags.join(', ')}\n`;
+  navigator.clipboard.writeText(r).then(() => alert('Report copied!'));
+}
+function dl(fn, uri) { const a = document.createElement('a'); a.href = uri; a.download = fn; a.click(); }
+
+// ==============================
+// TRENDS
+// ==============================
+function initBatches() { addBatch('Q1 Feedback'); addBatch('Q2 Feedback'); }
+function addBatch(name = '') {
+  batchCount++;
+  const id = 'batch' + batchCount;
+  const div = document.createElement('div');
+  div.className = 'batch-input'; div.id = id;
+  div.innerHTML = `<div class="batch-label-row"><input class="batch-name-input" value="${name || 'Period ' + batchCount}" placeholder="Period name"/><button class="batch-remove" onclick="document.getElementById('${id}').remove()">×</button></div><textarea placeholder="Paste feedback for this period..." style="min-height:80px"></textarea>`;
+  document.getElementById('batchList').appendChild(div);
+}
+async function runTrendAnalysis() {
+  const batches = [...document.querySelectorAll('.batch-input')].map(b => ({ name: b.querySelector('input').value || 'Period', text: b.querySelector('textarea').value.trim() })).filter(b => b.text.length > 20);
+  if (batches.length < 2) { alert('Add at least 2 periods with feedback content.'); return; }
+  document.getElementById('trendBtn').disabled = true;
+  document.getElementById('trendProgress').classList.add('active');
+  document.getElementById('trendLoading').classList.add('active');
+  document.getElementById('trendResults').style.display = 'none';
+  try {
+    const results = [];
+    for (const b of batches) {
+      const prompt = `Analyze feedback and return ONLY JSON (no markdown): {"sentimentScore":7,"positive":60,"neutral":20,"negative":20,"topIssues":["issue1","issue2","issue3"],"topPraise":["praise1","praise2"],"summary":"one sentence"}\n\nFeedback:\n${b.text.slice(0, 2000)}`;
+      const raw = await callClaude(prompt, 350);
+      const parsed = safeParseJSON(raw);
+      if (!parsed) throw new Error(`Could not parse response for period: ${b.name}`);
+      results.push({ ...parsed, name: b.name });
+    }
+    renderTrends(results);
+  } catch (e) { alert('Trend analysis failed: ' + e.message); }
+  finally {
+    document.getElementById('trendBtn').disabled = false;
+    document.getElementById('trendProgress').classList.remove('active');
+    document.getElementById('trendLoading').classList.remove('active');
+  }
+}
+function renderTrends(results) {
+  const scoreCol = s => s >= 7 ? 'var(--green)' : s >= 5 ? 'var(--accent)' : 'var(--accent3)';
+  let html = `<div class="insights-grid">`;
+  html += `<div class="card"><div class="card-title">📊 Sentiment Score</div><div class="card-desc">0–10 scale per period</div>`;
+  results.forEach(r => { const pct = r.sentimentScore * 10; html += `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500">${r.name}</span><span style="font-family:'DM Mono',monospace;font-size:12px;color:${scoreCol(r.sentimentScore)}">${r.sentimentScore}/10</span></div><div class="priority-bar"><div style="height:100%;width:${pct}%;background:${scoreCol(r.sentimentScore)};border-radius:2px"></div></div></div>`; });
+  html += `</div>`;
+  html += `<div class="card"><div class="card-title">📈 Sentiment Split</div><div class="card-desc">Pos · Neu · Neg per period</div>`;
+  results.forEach(r => { html += `<div style="margin-bottom:10px"><div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text2);margin-bottom:4px">${r.name}</div><div class="sentiment-bar" style="height:20px"><div class="seg pos" style="width:${r.positive}%">${r.positive > 12 ? r.positive + '%' : ''}</div><div class="seg neu" style="width:${r.neutral}%">${r.neutral > 12 ? r.neutral + '%' : ''}</div><div class="seg neg" style="width:${r.negative}%">${r.negative > 12 ? r.negative + '%' : ''}</div></div></div>`; });
+  html += `</div>`;
+  html += `<div class="card"><div class="card-title">⚠️ Top Issues</div><div class="card-desc">Per period</div><div class="items-list">`;
+  results.forEach(r => { html += `<div class="item"><div class="item-icon">📅</div><div class="item-body"><div class="item-title">${r.name}</div><div class="item-meta">${(r.topIssues || []).join(' · ')}</div></div></div>`; });
+  html += `</div></div>`;
+  html += `<div class="card"><div class="card-title">✨ What's Working</div><div class="card-desc">Top praise per period</div><div class="items-list">`;
+  results.forEach(r => { html += `<div class="item"><div class="item-icon">📅</div><div class="item-body"><div class="item-title">${r.name}</div><div class="item-meta">${(r.topPraise || []).join(' · ')}</div></div></div>`; });
+  html += `</div></div></div>`;
+  if (results.length >= 2) {
+    const first = results[0], last = results[results.length - 1];
+    const delta = (last.sentimentScore - first.sentimentScore).toFixed(1);
+    const col = delta >= 0 ? 'var(--green)' : 'var(--accent3)';
+    html += `<div class="summary-card" style="margin-top:16px"><div class="slabel">Delta</div><div class="summary-text">Score moved <strong style="color:${col}">${delta >= 0 ? '↑' : '↓'} ${Math.abs(delta)} pts</strong> from <strong>${first.name}</strong> (${first.sentimentScore}/10) to <strong>${last.name}</strong> (${last.sentimentScore}/10). ${delta >= 0 ? 'Positive trend — keep the momentum.' : 'Declining trend — investigate what changed.'}</div></div>`;
+  }
+  document.getElementById('trendResults').innerHTML = html;
+  document.getElementById('trendResults').style.display = 'block';
+}
+
+// ==============================
+// NETWORK GRAPH
+// ==============================
+function renderNetwork() {
+  const container = document.getElementById('netContainer');
+  if (!lastAnalysis || !lastAnalysis.keywords) { container.innerHTML = '<div class="empty-state">Run an analysis first.</div>'; return; }
+  const kws = lastAnalysis.keywords || [];
+  const edges = lastAnalysis.networkEdges || [];
+  const W = Math.min(container.clientWidth || 600, 700), H = 320;
+  const typeColor = { issue: '#ff6b47', praise: '#3dffa0', suggest: '#47c8ff', neutral: '#8a95a3' };
+  const nodes = kws.map((k, i) => ({ id: k.text, type: k.type, count: k.count, x: W / 2 + Math.cos(i / kws.length * 2 * Math.PI) * W * .3, y: H / 2 + Math.sin(i / kws.length * 2 * Math.PI) * H * .36, vx: 0, vy: 0 }));
+  const edgeList = edges.map(e => ({ source: nodes.findIndex(n => n.id === e.source), target: nodes.findIndex(n => n.id === e.target), weight: e.weight })).filter(e => e.source >= 0 && e.target >= 0);
+  const canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H; canvas.style.cursor = 'grab';
+  container.innerHTML = ''; container.appendChild(canvas);
+  const legend = document.createElement('div'); legend.className = 'net-legend';
+  legend.innerHTML = Object.entries(typeColor).map(([t, c]) => `<div class="net-legend-item"><div class="net-dot" style="background:${c}"></div>${t}</div>`).join('');
+  container.appendChild(legend);
+  const ctx = canvas.getContext('2d');
+  let dragging = null;
+  function tick() {
+    nodes.forEach(a => {
+      nodes.forEach(b => { if (a === b) return; const dx = a.x - b.x, dy = a.y - b.y, d = Math.sqrt(dx * dx + dy * dy) || 1, f = 900 / (d * d); a.vx += dx / d * f; a.vy += dy / d * f; });
+      a.vx += (W / 2 - a.x) * .006; a.vy += (H / 2 - a.y) * .006;
+      a.vx *= .8; a.vy *= .8;
+      if (a !== dragging) { a.x += a.vx; a.y += a.vy; }
+      a.x = Math.max(20, Math.min(W - 20, a.x)); a.y = Math.max(20, Math.min(H - 20, a.y));
+    });
+    edgeList.forEach(e => {
+      const s = nodes[e.source], t = nodes[e.target];
+      const dx = t.x - s.x, dy = t.y - s.y, d = Math.sqrt(dx * dx + dy * dy) || 1, f = (d - 90) * .03 * e.weight;
+      s.vx += dx / d * f; s.vy += dy / d * f; t.vx -= dx / d * f; t.vy -= dy / d * f;
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    edgeList.forEach(e => {
+      const s = nodes[e.source], t = nodes[e.target];
+      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(t.x, t.y);
+      ctx.strokeStyle = `rgba(255,255,255,${.04 + e.weight * .035})`; ctx.lineWidth = e.weight * .7; ctx.stroke();
+    });
+    nodes.forEach(n => {
+      const r = Math.min(6 + n.count * 2.2, 20);
+      ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, 2 * Math.PI);
+      ctx.fillStyle = typeColor[n.type] || '#8a95a3'; ctx.globalAlpha = .82; ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = isDark ? '#eef1f5' : '#1a1c18'; ctx.font = '10px DM Mono,monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(n.id.length > 9 ? n.id.slice(0, 8) + '…' : n.id, n.x, n.y + r + 11);
+    });
+  }
+  (function loop() { tick(); draw(); requestAnimationFrame(loop); })();
+  canvas.addEventListener('mousedown', e => { const rect = canvas.getBoundingClientRect(), mx = e.clientX - rect.left, my = e.clientY - rect.top; dragging = nodes.find(n => { const dx = n.x - mx, dy = n.y - my; return Math.sqrt(dx * dx + dy * dy) < 24; }) || null; });
+  canvas.addEventListener('mousemove', e => { if (!dragging) return; const rect = canvas.getBoundingClientRect(); dragging.x = e.clientX - rect.left; dragging.y = e.clientY - rect.top; });
+  canvas.addEventListener('mouseup', () => { dragging = null; });
+}
+
+// ==============================
+// ASK AI
+// ==============================
+function sendPreset(btn) { document.getElementById('chatInput').value = btn.textContent; sendChat(); }
+async function sendChat() {
+  const input = document.getElementById('chatInput'), q = input.value.trim();
+  if (!q) return;
+  if (!lastAnalysis) { addChatMsg('ai', 'Please run an analysis first on the Analyze tab, then ask me questions!'); return; }
+  input.value = '';
+  addChatMsg('user', q);
+  document.getElementById('chatSend').disabled = true;
+  chatMessages.push({ role: 'user', content: q });
+  const ctx = `You are a feedback analytics assistant. Analyzed data:\n${JSON.stringify({ summary: lastAnalysis.summary, sentiment: lastAnalysis.sentiment, keywords: lastAnalysis.keywords, issues: lastAnalysis.issues, suggestions: lastAnalysis.suggestions, priorities: lastAnalysis.priorities }, null, 2)}\n\nAnswer concisely and specifically based on this data. User: ${q}`;
+  try {
+    const raw = await callClaude(ctx, 400);
+    chatMessages.push({ role: 'assistant', content: raw });
+    addChatMsg('ai', raw);
+  } catch (e) { addChatMsg('ai', 'Sorry, something went wrong: ' + e.message); }
+  finally { document.getElementById('chatSend').disabled = false; }
+}
+function addChatMsg(role, text) {
+  const h = document.getElementById('chatHistory');
+  const d = document.createElement('div'); d.className = 'chat-msg ' + role;
+  d.innerHTML = `<div class="msg-avatar">${role === 'ai' ? '⚡' : '👤'}</div><div class="msg-bubble">${text.replace(/\n/g, '<br>')}</div>`;
+  h.appendChild(d); h.scrollTop = h.scrollHeight;
+}
+
+// ==============================
+// INIT
+// ==============================
+updateCount();
+initBatches();
+</script>
+</body>
+</html>
